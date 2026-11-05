@@ -14,9 +14,7 @@ The SMS Triggers page displays the configured triggers, their event names, phone
 
 Use the toggle beside **SMS Triggers** to enable or disable the feature.
 
-Keep it enabled when you want the assistant to use the configured SMS triggers.<br /><br />
-
-![SMS Trigger2](/SMS-trigger2.png "SMS Trigger2")
+Keep it enabled when you want the assistant to use the configured SMS triggers.
 
 ## Add an SMS Trigger
 
@@ -30,15 +28,17 @@ Keep it enabled when you want the assistant to use the configured SMS triggers.<
 
 Enter the message you want to send to the customer. You can use supported variables to personalize the message with information from the conversation.
 
+![Screenshot 2026 11 05 At 2 53 02 PM 1](/images/Screenshot-2026-11-05-at-2.53.02-PM-1.png "Screenshot 2026 11 05 At 2 53 02 PM 1")
+
 **Example:**
 
-Hi `{{firstName}}`, complete your order for `{{product_discussed}}` from XYZ companyf here: `{{checkout_link}}` - XYZ company
+Hi `{firstName}`, complete your order for `{product_discussed}` from XYZ company here: `{checkout_link}` - XYZ company
 
 In this example:
 
-- `{{firstName}}` represents the customer's first name.
-- `{{product_discussed}}` represents the product discussed.
-- `{{checkout_link}}` represents the checkout link.
+- `{firstName}` represents the customer's first name.
+- `{product_discussed}` represents the product discussed.
+- `{checkout_link}` represents the checkout link.
 
 Make sure the variables you use are supported and available in your assistant's configuration.
 
