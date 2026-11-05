@@ -9,9 +9,6 @@
   },
   "favicon": "/favicon.svg",
   "navigation": {
-    "pages": [
-      "assistants-2"
-    ],
     "global": {
       "anchors": [
         {
@@ -25,7 +22,26 @@
           "icon": "newspaper"
         }
       ]
-    }
+    },
+    "groups": [
+      {
+        "group": "Assistants",
+        "pages": [
+          "assistants-2",
+          "assistant-configuration",
+          "writing-and-managing-prompts",
+          "welcome-message",
+          "language-detection",
+          "knowledge-base",
+          "custom-api",
+          "context-management",
+          "conversation-context",
+          "extraction-fields",
+          "sms-triggers",
+          "end-call-triggers"
+        ]
+      }
+    ]
   },
   "logo": {
     "light": "/logo/light.svg",
