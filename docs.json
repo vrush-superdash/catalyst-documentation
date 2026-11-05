@@ -10,6 +10,8 @@
   "favicon": "/favicon.svg",
   "navigation": {
     "pages": [
+      "assistant-configuration-after-creating-an-assistant-open-it-from-the-assistants-page-to-configure-its-behavior-and-settings-here-you-can-manage-the-prompt-select-voice-and-language-options-choose",
+      "assistants-2",
       {
         "group": "Getting Started",
         "pages": [

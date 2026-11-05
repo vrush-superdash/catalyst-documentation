@@ -1,0 +1,177 @@
+---
+title: "Custom API"
+---
+
+Custom APIs allow your Assistant to fetch information, send data, and perform actions based on the conversation. For example, a restaurant Assistant can check table availability, create or cancel reservations, and look up existing bookings.
+
+You can configure when an API should run, what information it should send, what response it should receive, and what the Assistant should say while the request is being processed.
+
+## Accessing Custom APIs
+
+To configure a Custom API:
+
+1. Go to **Assistants** from the left sidebar.
+2. Select the Assistant you want to configure.
+3. Open the **Tools** tab.
+4. Select **Custom API** from the tools menu.
+5. Turn ON the **Custom APIs** toggle.
+6. Click **Add Custom API** to start configuring an API.
+
+## Understanding Custom API Configuration
+
+Once you create a Custom API, you need to configure when it should run, what information it should send, and what to do with the response.
+
+The configuration is divided into five main sections:
+
+1. **When does it run?** – Choose when the API should run.
+2. **How do we decide to run it?** – Set the conditions for running the API.
+3. **The request** – Enter the API URL and the information to send and Select a HTTP Method.
+4. **What the caller hears** – Set what the Assistant says while waiting for the API response.
+5. **Save from the response** – Choose which information returned by the API the Assistant can use.
+
+## 1. When Does It Run?
+
+Choose when the API should run.
+
+Select one of the available options:
+
+- **Start of the call:** Runs when the call starts.
+- **During the call:** Runs when the conversation meets the conditions you set.
+- **End of the call:** Runs when the call ends.
+- **Call Status:** Runs based on the call status.
+
+**In Applies to,** you can select for what type of calls this API is applicable to : **Incoming calls** and **Outgoing calls**. (you can select any one or both according to your requirement)
+
+**Run at most once per call :** Controls how many times the API can run during a call.<br />If it is turned **ON :** The API runs exactly or atmost once per call.<br />If it is turned **OFF:** The API can run again whenever its conditions are met.
+
+## 2. How Do We Decide to Run It?
+
+This section tells the Assistant when to run the API.
+
+**Quick Check (Optional)**
+
+Add a short instruction describing when the API might be needed. The Assistant checks this condition on every turn of the conversation.
+
+For example:
+
+"Trigger when the customer wants to change or cancel an existing reservation."
+
+**Detailed Check**
+
+Add the complete instructions that help the Assistant decide whether to run the API. These instructions are evaluated only when the Quick Check passes, or on every turn if no Quick Check is provided.
+
+You can include:
+
+- When the API should run.
+- When it should not run.
+- What information needs to be collected from the conversation.
+- The format in which the information should be returned.
+
+Examples to help the Assistant understand the conditions.<br /><br />You can use XML tags in the Detailed Check to organize instructions into different sections and make them easier for the Assistant to understand.
+
+- `<role>` – Explains what the API is responsible for.
+- `<fire_when>` – Defines the conditions for triggering the API.
+- `<output>` – Specifies the information and format the Assistant should return.
+- `<examples>` – Provides examples of when the API should and should not run.
+
+## 3. The Request
+
+This section defines where the API request is sent and what information is included.
+
+**Method**
+
+Select the HTTP method supported by your API:
+
+- **GET:** Usually used to retrieve information.
+- **POST:** Usually used to send information or perform an action.
+- **PUT:** Usually used to update existing information.
+
+**URL**
+
+Enter the API endpoint where the request should be sent.
+
+For example:
+
+`https://example.com/api/reservations`
+
+**Request Fields**
+
+Add the information that needs to be sent to the API. Click **Add a request field** to include a new field.
+
+Each field has the following options:
+
+| Option | What it means |
+| :-- | :-- |
+| Field | Name of the information being sent. |
+| Send as | Where the information should be sent, such as a URL parameter, body field, or header. |
+| Value comes from | Where the value comes from, such as a fixed value, the conversation, or a call variable. |
+| Value | The actual value or variable being sent. |
+
+For example, a reservation lookup API might need the restaurant ID, customer's phone number, language, and call ID.
+
+## 4. What the Caller Hears
+
+This section lets you set the messages the Assistant speaks while the API is running and after it receives a response.
+
+You can configure messages for the languages available in your Assistant's Language Settings. Select a language tab to add its messages.
+
+**Say while waiting**
+
+The message played while the API is processing.
+
+Example: "Give me a moment while I check your reservation."
+
+**Say on success**
+
+The message played when the API successfully completes.
+
+You can also use information returned by the API, such as `{message}`.
+
+**Say if it fails**
+
+The message played when the API fails.
+
+## 5. Save from the Response
+
+This section lets you save information returned by the API so the Assistant can use it later in the conversation.
+
+Click **Add a response field** to select the information you want to save.
+
+The available options are:
+
+- **Response field:** The name of the field returned by the API.
+- **Read as:** Choose how to read the returned information, such as one field from the response or the whole response.
+- **Save to:** You can choose for assistants to use or for later requests.
+
+For example, if the API returns \{`message }` and \{`slots }`, you can add both fields here.
+
+Make sure the response field names match the fields returned by your API.
+
+## Advanced Options
+
+1. Context filter
+
+Use this to control when an API is considered based on the context currently active in the call.
+
+- Select the characteristics and values that should apply.
+- The API is considered only when, for every selected characteristic, at least one of its selected values is currently active in the call.
+- Leave it empty if you want the API to always be considered.
+
+Example: If you select `customerIntent: Reservation`, the API is considered only when the active call context includes the Reservation intent.<br /><br />2. Then run other APIs
+
+Use this when you want other APIs to run automatically after the current API succeeds.
+
+- Select the APIs you want to run next.
+- They run automatically in the order you select them.
+- These APIs stop running based on their own checks.
+- Their spoken messages are not used.
+
+APIs marked as conditional are skipped until their own Available only after another API condition is met.<br /><br />3. Available only after another API
+
+Use this to make an API available only after another selected API has completed successfully during the call.
+
+- Select the API or APIs that must complete successfully first.
+- The current API is considered only after at least one selected API succeeds.
+- Leave it empty if you want the API to remain available at any time.
+
+Example: A Book Table API can be configured to become available only after the Availability Search API succeeds.
