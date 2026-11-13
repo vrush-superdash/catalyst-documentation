@@ -1,0 +1,64 @@
+---
+title: "Improvements For Catalyst"
+---
+
+3 main upgrades for Catalyst:
+
+1. An in-built AI assistant, like **Genie** in Sarvam
+2. A prompt template library
+3. AI-suggested tests in automated testing
+
+## 1. In-built AI assistant (like Sarvam's Genie)
+
+- It lives in a side panel on every page of Catalyst.
+- It knows which assistant you are in, which tab you are on, everything.
+- You describe what you want in plain English, and it makes the changes on the platform.
+- It can create and edit the prompt, variables, tools, voice and knowledge base.
+- It can see the agent's current greeting, prompt, instructions, variables, tools and settings, and suggest changes.
+- It flags issues and improvements, and you can accept or dismiss each one.
+- Nothing changes without users permission. Example: if it suggests the inbound greeting "Hello, I'm calling from ABC Finance", you see it and click Allow, Deny or Edit.
+- The same applies to the prompt and all other messages.
+- It keeps chats: you can start a new chat or open an old chat and continue.
+- It can answer questions about our platform. All the questions we answer on Discord (how it works, what it does) can be fed to it, so users ask it directly instead of waiting for us.
+- It can be offered according to the customer's payment plan.
+- We can give the AI assistant a knowledge base with the common questions we already answer on Discord: how a feature works, what it does, and why something didn't work.
+
+**How a user builds an agent with it:**
+
+- Describe the agent in one line. Example: "An EMI reminder agent."
+- It asks a few questions, one at a time. Example: "What should the agent do if the customer says they have already paid?"
+- It proposes a build plan and shows everything one by one: prompt, extractions, and so on.
+- You can make changes manually at each step, then click Next (Allow).
+- Finally it builds everything and notifies you, and you can review and edit it manually.
+
+**Limitations of the AI assistant:**
+
+- It needs to know Catalyst very well (office hours, context management, Custom APIs, SMS triggers, language tags). If the platform changes and its knowledge must be updated.
+- It can make wrong changes,so every change needs approval and an undo.
+- It would costs lot of credits for its usage and time to build this.
+
+## 2. Prompt template library
+
+- Platforms like Vapi, Retell and Sarvam give ready-made agents for common use cases that you can copy and adapt.
+- We can keep one master template per business type, like one master restaurant template,EMI remainder agent instead of copying another agents prompt.
+- The AI assistant can access the library and show the master prompt to the user.
+- The user reviews it and suggests changes, and the AI assistant builds the agent.
+- If the user does not want the sample prompt, they get a text box to describe the kind of prompt they want, or the changes they need.
+
+**Example:**
+
+- The user picks the "Restaurant" template.
+- The AI assistant shows the master prompt with complete workflow which user can modify or ask the inbuilt ai-assistant to do it.
+- The AI assistant removes or adds the prompt part according to the user needs , then user clicks Allow, and the agent is built.
+
+## 3. AI-suggested tests in automated testing
+
+- Right now, every test in automated testing has to be typed .Instead, based on the agent's current configuration, the AI can suggest test cases.
+- The user can approve, edit or reject each suggested test, then run them.
+- The user can also type something like "Carry out 10 tests about reservations".
+-  Our current automated testing area is really good , but we can just add these test suggestions 
+
+**Example of suggested tests for a restaurant:**
+
+- "Caller asks for a table for 6 tonight." The agent should read back all the details before booking.
+- The AI must be able to suggest tests like these , that user possibly wants to test , based on the current assistant configuration.<br />

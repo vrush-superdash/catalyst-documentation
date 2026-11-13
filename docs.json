@@ -24,7 +24,8 @@
           "conversation-context",
           "extraction-fields",
           "sms-triggers",
-          "end-call-triggers"
+          "end-call-triggers",
+          "improvements-for-catalyst"
         ]
       }
     ]
