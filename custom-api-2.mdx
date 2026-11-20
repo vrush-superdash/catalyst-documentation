@@ -1,0 +1,220 @@
+---
+title: "Custom api 2"
+---
+
+A Custom API connects your Assistant to your own systems. The Assistant pulls details out of the conversation, sends them to your endpoint, and can use the reply.
+
+For example, a restaurant Assistant can check table availability and book a table during the call, and a store Assistant can place an order once the call ends.
+
+<Note>
+  Custom APIs are off by default. Turn on the **Custom APIs** toggle in the Assistant's **Tools** tab, or none of your APIs will run.
+</Note>
+
+## 1. When does it run?
+
+| Option | Runs when | Typical use |
+| :-- | :-- | :-- |
+| **Start of the call** | The call starts | Load customer or account details before the greeting |
+| **During the call** | The conversation meets your conditions | Check availability, book a table, verify an ID |
+| **End of the call** | The call ends | Place an order, update a CRM |
+| **Call Status** | The telephony vendor reports a status | Handle missed, busy or unanswered calls |
+
+- **Applies to:** choose **Incoming calls**, **Outgoing calls**, or both.
+- **Run at most once per call:** when ON, the API runs once per call at most. When OFF, it can run again whenever its checks pass.
+
+<Tip>
+  Turn **Run at most once per call** ON for actions that create or change data, like a booking. Keep it OFF for lookups a caller may repeat, like checking another date.
+</Tip>
+
+## 2. Extraction
+
+Extraction is how values get from the conversation into your request. You write instructions; the Assistant reads the conversation, follows them, and returns the values as JSON. 
+
+### During the call vs end of the call
+
+|  | During the call | End of the call |
+| :-- | :-- | :-- |
+| **Section name** | How do we decide to run it? | What to pull from the conversation |
+| **When it is read** | On every turn while the call is live | Once, over the whole conversation, after the call |
+| **What it decides** | **When** to run, and **what** to send | Only **what** to send |
+
+### Quick Check and Detailed Check
+
+APIs that run during the call have two checks.
+
+- **Quick Check :** a short filter read on every turn. It only says whether the API is worth a closer look.
+- **Detailed Check:** the full rules. It is read only when the Quick Check passes, or on every turn if there is no Quick Check. It decides whether to run **now**, and outputs the values.
+
+<Info>
+  If the Quick Check never passes, the Detailed Check is never read, and the API never runs. If your API seems to fire late, check the Quick Check first.
+</Info>
+
+You can write the Detailed Check in plain English, or organise it with tags:
+
+| Tag | What goes in it |
+| :-- | :-- |
+| `<role>` | What the check is responsible for |
+| `<fire_when>` | The exact conditions for running |
+| `<output>` | The values to return and their format |
+| `<examples>` | Cases where it should and should not run |
+
+### Rules for reliable extraction
+
+1. **Name each value exactly like the request field it fills.** To fill the request field `partySize`, the instructions must output `partySize`.
+2. **Show the output format.** Give an example of the JSON and fix exact formats, such as `yyyy-MM-ddTHH:mm` for dates.
+3. **Say when a value counts as confirmed.** For example: said by the caller, or offered by the Assistant and accepted.
+4. **Say what to leave out.** Unconfirmed or ambiguous values should be excluded. Say what to return when nothing qualifies, such as an empty list.
+5. **Pass reference data with call variables.** Catalogues, time slots and the current time go into the instructions in curly brackets, such as `{currentTime}`.
+6. **During the call, say when to stay silent.** Tell the check to return nothing on turns where the API should not run.
+
+<Warning>
+  Without clear "when does it count" and "what to leave out" rules, the Assistant may guess, for example assuming a quantity of one, or booking a time the caller never accepted.
+</Warning>
+
+### Examples
+
+<Tabs>
+  <Tab title="During the call: Availability Search">
+    The check waits until the caller has agreed a **party size**, a **day** and a **time**. On every turn before that, it returns nothing. On the turn the last of the three is agreed, it returns them as JSON, for example:
+
+    ```json
+    {"date": "2026-11-20T19:00", "partySize": 2, "language": "EN"}
+    ```
+
+    The instructions say what counts as agreed (said by the caller, or offered by the Assistant and accepted), the party size limit, and the exact date format.
+  </Tab>
+  <Tab title="End of the call: Order placement">
+    After the call, the check reads the whole conversation once and builds the order: the **items** the customer confirmed, with their quantities, and the **delivery slot** they chose.
+
+    The instructions say what to leave out: products only asked about, items without a confirmed quantity, unclear variants, and substitutes the customer did not accept. They also say what to do when no slot was chosen (use the earliest one), and that times must be in UTC.
+  </Tab>
+</Tabs>
+
+## 3. The request
+
+The request is what your endpoint receives. Choose the **Method**, enter the **URL**, then add a request field for each value your endpoint expects.
+
+| Method | Usually used to |
+| :-- | :-- |
+| **GET** | Retrieve information |
+| **POST** | Send information or perform an action |
+| **PUT** | Update existing information |
+
+### Request fields
+
+| Option | What it controls |
+| :-- | :-- |
+| **Field** | The name your endpoint expects |
+| **Send as** | URL parameter, body field or header |
+| **Value comes from** | Where the value is taken from (The conversation) |
+| **Value** | The value itself, for a fixed value or a call variable |
+
+Every value comes from one of three places. Only one of them uses extraction:
+
+| Value comes from | Meaning | Example |
+| :-- | :-- | :-- |
+| **A fixed value** | The same on every call | `restaurantId` = `188650` |
+| **The conversation** | Filled by your extraction instructions | `date`, `partySize`, `items` |
+| **A call variable** | Filled in by the platform on each call | `{callId}` |
+
+<Warning>
+  The name in your extraction output must match the request field exactly, including capital letters. If the instructions output `party_size` but the field is `partySize`, your endpoint receives nothing for it.
+</Warning>
+
+### What your endpoint receives
+
+<Tabs>
+  <Tab title="Availability Search (GET)">
+    | Field | Send as | Value comes from | Value |
+    | :-- | :-- | :-- | :-- |
+    | `restaurantId` | URL parameter | A fixed value | `188650` |
+    | `date` | URL parameter | The conversation | From the Detailed Check |
+    | `partySize` | URL parameter | The conversation | From the Detailed Check |
+    | `language` | URL parameter | The conversation | From the Detailed Check |
+    | `callId` | URL parameter | A call variable | `{callId}` |
+
+    The request sent:
+
+    ```text
+    GET https://example.com/availability?restaurantId=188650&date=2026-11-20T19:00&partySize=2&language=EN&callId=CA123
+    ```
+  </Tab>
+  <Tab title="Order placement (POST)">
+    | Field | Send as | Value comes from | Value |
+    | :-- | :-- | :-- | :-- |
+    | `items` | Body field | The conversation | From the extraction |
+    | `orderSlot` | Body field | The conversation | From the extraction |
+    | `callId` | Body field | A call variable | `{callId}` |
+    | `phone` | Body field | A fixed value | `1234` |
+
+    The request body sent:
+
+    ```json
+    {
+      "items": [{ "sku": "SKUGR1", "quantity": 1 }],
+      "orderSlot": {
+        "start": "2026-07-23T03:30:00.000+00:00",
+        "end": "2026-07-23T06:30:00.000+00:00"
+      },
+      "callId": "<the call's ID>",
+      "phone": "1234"
+    }
+    ```
+  </Tab>
+</Tabs>
+
+<Tip>
+  Only fields set to **The conversation** need extraction. If a value never changes, use a fixed value. If the platform already knows it, use a call variable.
+</Tip>
+
+## 4. What the caller hears
+
+Shown for APIs that run during the call. Write the messages for each language in your Assistant's **Language Settings**.
+
+| Message | Played when | Example |
+| :-- | :-- | :-- |
+| **Say while waiting** | The API is running | "Give me a moment while I check that." |
+| **Say on success** | The API returns successfully | A saved reply value, such as `{message}` |
+| **Say if it fails** | The API fails | "Sorry, I couldn't check that right now." |
+
+<Tip>
+  Always write a failure message, so the caller is not left in silence if your server is slow or down.
+</Tip>
+
+## 5. Save from the response
+
+The response is what your endpoint sends back. Add a response field for each value you want to keep.
+
+| Option | What it means |
+| :-- | :-- |
+| **Response field** | The field name in your reply. It must match exactly |
+| **Read as** | One field from the reply, or the whole reply |
+| **Save to** | For the Assistant to use, or for later requests |
+
+Saved values can be used in the prompt and in spoken messages with curly brackets, such as `{message}` or `{combinations}`.
+
+### Why saved responses matter for extraction
+
+One API's response often becomes the evidence for the next API's extraction:
+
+| Saved from | Used by | Why |
+| :-- | :-- | :-- |
+| Availability Search: `combinations`, `allAvailableTimes` | Book Table | To check the read-back slot really exists before booking |
+| Availability Search: `combinations`, `allAvailableTimes` | The main prompt | So the Assistant offers only real times and tables |
+| Lookup: `reservations` | Reservation Modification | To know which reservation is being changed |
+
+<Note>
+  If an API runs after the call ends, such as order placement, nobody needs the reply. Leave this section empty.
+</Note>
+
+## Advanced options
+
+| Option | Use it to | How it works |
+| :-- | :-- | :-- |
+| **Context filter** | Limit an API to certain call context | The API is considered only if, for every selected characteristic, at least one selected value is active. For example, `customerIntent: Reservation` |
+| **Then run other APIs** | Chain follow-up APIs | They run in the order you select, after this API succeeds. Each still applies its own checks, and their spoken messages are not played |
+| **Available only after another API** | Force an order between APIs | The API is considered only after at least one selected API has succeeded. For example, Book Table only after Availability Search |
+
+<Tip>
+  Turn on **Record API trigger rejection reason** in the Custom API settings. When an API passes its Quick Check but its Detailed Check declines, the reason is saved in the call log, so you can see exactly why it didn't run.
+</Tip>

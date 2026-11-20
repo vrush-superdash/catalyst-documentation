@@ -2,47 +2,63 @@
 title: "Language Detection"
 ---
 
-Language Detection allows the assistant to identify the language the caller is speaking and respond in that language. It also applies to inactivity, filler, and other pre-written messages when language-specific versions are available.
-
 ![Screenshot 2026 10 29 222154](/images/Screenshot-2026-10-29-222154.png "Screenshot 2026 10 29 222154")
 
-## Enable Language Detection
+Language Detection lets your Assistant notice which language the caller is speaking and reply in that language. It also applies to inactivity, filler and other pre-written messages, as long as you have written a version for each language.
 
-You can toggle **Enable Language Detection** on or off depending on whether you want the assistant to automatically detect the caller's language and respond accordingly.
+<Info>
+  Language Detection works best with the **State of the art** transcription option. The languages you can choose come from that setting.
+</Info>
 
-## Supported Languages
+### Enable Language Detection
 
-The supported languages come from the assistant's transcription settings, specifically the **State of the art** transcription option.
+Turn this on to let the Assistant detect and switch languages. When it is off, the Assistant stays in the default language for the whole call.
 
-Each language has a code and a name. You can edit the name to describe how the assistant should speak that language.
+### Supported Languages
 
-For example:
+Each language has a **code** and a **name**. The code is fixed. You can edit the name, and the Assistant uses it word for word as its instruction for how to speak that language.
 
-- `en` — English
-- `hi` — colloquial Hindi
+This means the name controls the **style** of speech, not just the language. Choose a name that describes how your callers actually talk:
 
-You can use names such as _Hinglish_ or _Spoken Kannada_ to guide the assistant's response style.
+| Code | Name you could use | What the Assistant does |
+| :-- | :-- | :-- |
+| `hi` | Colloquial Hindi | Speaks everyday Hindi, not formal or textbook Hindi |
+| `hi` | Hinglish (Hindi words in Devanagari, English words in English letters) | Mixes Hindi and English the way people do in conversation |
+| `kn` | Spoken Kannada | Speaks everyday Kannada, as people talk on the phone, not textbook Kannada |
+| `ta` | Everyday spoken Tamil | Speaks informal, everyday Tamil |
 
-## Default Language
+<Tip>
+  Be specific. "Hindi" may come out formal. "Colloquial Hindi" or "Hinglish" tells the Assistant to sound like a real person on a call. You can also say which script to use, such as "Hindi words in Devanagari, English words in English letters".
+</Tip>
 
-Choose the default language from the dropdown.
+### Default Language
 
-This is the language used when the call starts and the fallback language when detection is turned off or the detected language is uncertain.
+The language the call starts in. It is also the fallback whenever detection is off or the Assistant is unsure which language the caller is speaking.
 
-## Minimum Words to Switch Language
+<Note>
+  Pick the language most of your callers speak. Your welcome message should be in this language too.
+</Note>
 
-Set the minimum number of words the caller must say in another language during one turn before the assistant switches languages.
+### Minimum words to switch language
 
-The default value shown is **5 words**. A complete sentence is usually around five words.
+How many words the caller must say in another language, in one turn, before the Assistant switches. The default is **5**, which is about one full sentence. This stops the Assistant from switching on a single word. For example, a Hindi speaker who says "OK" or "yes" stays in Hindi.
 
-Explicit requests such as “Can you please speak English?” always trigger a language switch.
+<Info>
+  A direct request, such as "Can you speak in English?", always switches the language, whatever this number is.
+</Info>
 
-## Custom Switching Rules (Optional)
+### Custom Switching Rules (optional)
 
-Use this field to add extra instructions describing when the assistant should switch languages.
+Extra instructions, in plain language, for when to switch. Leave it empty to use the built-in behaviour: switch only on a clear change of language, or when the caller asks.
 
-Leave it empty to use the built-in behaviour, which switches languages when there is a clear, sustained language change or when the caller explicitly asks to switch.
+<Warning>
+  With State of the art transcription, these rules are only used to recognise **direct requests** to change language. All other switching follows **Minimum words to switch language**.
+</Warning>
 
-With **State of the art** transcription, these rules are used only to recognise explicit requests to change language. The minimum-word setting is used for other language switches.
+**Example**
 
-**Example** : Do not switch languages unless the caller explicitly asks you to or speaks more than 5 words in another language.
+```text
+- Switch to English only when the user asks for English; English words mixed
+  into Hindi sentences are normal Hinglish, so stay in Hinglish.
+- If the user asks for a language that is not supported, stay in Hindi.
+```

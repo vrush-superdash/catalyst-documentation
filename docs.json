@@ -25,7 +25,8 @@
           "extraction-fields",
           "sms-triggers",
           "end-call-triggers",
-          "improvements-for-catalyst"
+          "improvements-for-catalyst",
+          "custom-api-2"
         ]
       }
     ]

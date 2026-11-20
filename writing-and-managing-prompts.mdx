@@ -2,55 +2,67 @@
 title: "Writing and Managing Prompts"
 ---
 
-The prompt defines how your assistant should behave and respond during conversations. You can edit the prompt to set instructions for the assistant and update its behaviour based on your requirements.<br />
+The prompt tells your Assistant who it is, what it needs to do, and how to respond. You can edit it at any time to change its behaviour.
 
-![Assistant Config](/assistantConfig.png "Assistant Config")
+For the full guide, refer to the [Superdash Prompting Guidelines](https://docs.google.com/document/d/1G1n56zVjtAfXO0sXA7Q5CKbhKw3-1jxu6rAanMhToLE/edit?tab=t.0).
 
-## Write a Clear Prompt
+## Structure your prompt
 
-A well-structured prompt helps the assistant understand its role, follow the right conversation flow, and respond appropriately to different situations. You can organize your prompt using the following sections.
+A clear structure helps the Assistant follow the right flow. Organise your prompt into these sections:
 
-### 1. Objective
+| Section | What to write |
+| :-- | :-- |
+| **Objective** | Who the Assistant is, which company it represents, and its goal |
+| **Key Guidelines** | Rules for the whole call, such as response length, language and tone |
+| **Conversation Flow** | The call split into phases and steps, from the opening to the closing |
+| **Special Scenarios** | How to handle refusals, callbacks, unclear answers or the wrong person |
+| **Customer Questions** | How to answer common questions, and what to do when the answer isn't known |
+| **Response Approach** | How to answer: directly, with a follow-up question, and staying in role |
+| **Variables** | The dynamic values used in the prompt (see below) |
 
-Explain who the assistant is, which company it represents, and what it needs to accomplish.
+<Tip>
+  Keep each instruction short and clear, and end the Assistant's lines with a short question so the caller stays engaged.(more conversational)
+</Tip>
 
-**Example:** You are a customer support assistant at ABC Company. Your goal is to help customers with their queries.
+## Variables
 
-### 2. Key Guidelines
+Variables add live details to the prompt, such as the caller's name or the current time.
 
-Add general instructions that the assistant should follow throughout the conversation, such as response length, language, tone, and how to handle information.
+### Where variables come from
 
-**Example:** Keep responses short, use natural conversational language, and never invent information.
+| Source | Examples | How they get in |
+| :-- | :-- | :-- |
+| **Superdash** | `currentTime`, `officeHours`, `daysReference` | Filled in automatically on every call |
+| **Your contact data** | `firstName`, `companyName` | Passed with each contact through a campaign, CSV upload, Google Sheet or API |
+| **Custom APIs** | `message`, `combinations` | Saved from an API's reply during the call |
 
-### 3. Conversation Flow
+<Note>
+  For your own contact data, the variable name must exactly match the field name you pass in, including capital letters. For example, a column called `firstName` is used as `firstName`.
+</Note>
 
-Divide the conversation into phases and steps so the assistant knows what to do from the beginning to the end.
+### How to use them in the prompt
 
-**Example:** Introduce yourself, explain the reason for the call, understand the customer's needs, and close the conversation politely.
+Define each variable once in a **Variables** table at the end of the prompt. The left column is the placeholder you use in the prompt, and the right column is the variable that fills it:
 
-### 4. Special Scenarios and Objection Handling
+```markdown
+## Variables
+| Placeholder     | Value           |
+|-----------------|-----------------|
+| [firstName]     | {firstName}     | Name of the customer
+| [currentTime]   | {currentTime}   |
+| [officeHours]   | {officeHours}   |
+| [daysReference] | {daysReference} |
+```
 
-Explain how the assistant should respond to situations such as a customer refusing, asking for a callback, giving an unclear answer, or contacting the wrong person.
+<Tip>
+  Use the square-bracket placeholder everywhere in the prompt, and keep the curly-bracket variable only in the Variables table. That way each variable is defined in one place and is easy to update.
+</Tip>
 
-**Example:** If the customer is not interested, acknowledge their response politely and follow the defined closing flow.
+## Things to avoid
 
-### 5. Customer Questions and Answers
-
-Describe how the assistant should answer common questions and what it should do when the required information is unavailable.
-
-**Example:** Answer using the available approved information. If the answer is unavailable, follow the defined fallback instructions instead of guessing.
-
-### 6. Response Approach
-
-Define how the assistant should respond during the conversation, including whether to answer directly, ask follow-up questions, or stay within a specific role.
-
-**Example:** Answer the customer's question directly and ask a follow-up question only when needed.
-
-### 7. Variables
-
-These variables include the dynamic values needed during the conversation, using the variable names supported by your configuration.<br /><br />You can also include a **Variables** section at the end of your prompt to list the variables used and explain what each one represents, as shown.
-
-![Variables](/variables.png "Variables")
-
-- Use **Test Assistant** to test how the assistant responds. You can test using a **phone call, web call, or text.**
-- If the assistant does not behave as expected, update the relevant instructions, save the prompt again, and retest.
+<Warning>
+  - Avoid instructions on how to sound, such as "speak happily".
+  - Avoid asking the Assistant to wait or pause, such as "wait five seconds".
+  - Do not use emojis in prompts. 
+  - Tell the Assistant what to do instead of what not to do, for example "Only say the company name if the caller asks" rather than "Don't say the company name until they ask".
+</Warning>
